@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.content.Context;
@@ -21,14 +6,12 @@ import android.view.View;
 
 /**
  * 范围选择月视图
- * Created by huanghaibin on 2018/9/11.
  */
 public abstract class RangeMonthView extends BaseMonthView {
 
     public RangeMonthView(Context context) {
         super(context);
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -78,13 +61,13 @@ public abstract class RangeMonthView extends BaseMonthView {
         boolean isNextSelected = isSelectNextCalendar(calendar);
 
         if (hasScheme) {
-            //标记的日子
-            boolean isDrawSelected = false;//是否继续绘制选中的onDrawScheme
+            // 标记的日子
+            boolean isDrawSelected = false; // 是否继续绘制选中的onDrawScheme
             if (isSelected) {
                 isDrawSelected = onDrawSelected(canvas, calendar, x, y, true, isPreSelected, isNextSelected);
             }
             if (isDrawSelected || !isSelected) {
-                //将画笔设置为标记颜色
+                // 将画笔设置为标记颜色
                 mSchemePaint.setColor(calendar.getSchemeColor() != 0 ? calendar.getSchemeColor() : mDelegate.getSchemeThemeColor());
                 onDrawScheme(canvas, calendar, x, y, true);
             }
@@ -144,7 +127,7 @@ public abstract class RangeMonthView extends BaseMonthView {
             return;
         }
 
-        //优先判断各种直接return的情况，减少代码深度
+        // 优先判断各种直接return的情况，减少代码深度
         if (mDelegate.mSelectedStartRangeCalendar != null && mDelegate.mSelectedEndRangeCalendar == null) {
             int minDiffer = CalendarUtil.differ(calendar, mDelegate.mSelectedStartRangeCalendar);
             if (minDiffer >= 0 && mDelegate.getMinSelectRange() != -1 && mDelegate.getMinSelectRange() > minDiffer + 1) {

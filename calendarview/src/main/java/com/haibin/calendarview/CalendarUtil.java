@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.annotation.SuppressLint;
@@ -78,7 +63,6 @@ final class CalendarUtil {
         return count;
     }
 
-
     /**
      * 是否是闰年
      *
@@ -88,7 +72,6 @@ final class CalendarUtil {
     static boolean isLeapYear(int year) {
         return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
     }
-
 
     /**
      * 获取月视图的确切高度
@@ -107,7 +90,6 @@ final class CalendarUtil {
         int nextDiff = getMonthEndDiff(year, month, monthDaysCount, weekStartWith);
         return (preDiff + monthDaysCount + nextDiff) / 7 * itemHeight;
     }
-
 
     /**
      * 获取某天在该月的第几周,换言之就是获取这一天在该月视图的第几行,第几周，根据周起始动态获取
@@ -187,7 +169,6 @@ final class CalendarUtil {
         return week == CalendarViewDelegate.WEEK_START_WITH_SAT ? 0 : week;
     }
 
-
     /**
      * DAY_OF_WEEK return  1  2  3 	4  5  6	 7，偏移了一位
      * 获取日期所在月份的结束偏移量，用于计算两个年份之间总共有多少周，不用于MonthView
@@ -234,7 +215,6 @@ final class CalendarUtil {
         return week == CalendarViewDelegate.WEEK_START_WITH_SAT ? 0 : week;
     }
 
-
     /**
      * DAY_OF_WEEK return  1  2  3 	4  5  6	 7，偏移了一位
      * 获取日期月份对应的结束偏移量,用于计算两个年份之间总共有多少周，不用于MonthView
@@ -248,7 +228,6 @@ final class CalendarUtil {
     static int getMonthEndDiff(int year, int month, int weekStart) {
         return getMonthEndDiff(year, month, getMonthDaysCount(year, month), weekStart);
     }
-
 
     /**
      * DAY_OF_WEEK return  1  2  3 	4  5  6	 7，偏移了一位
@@ -285,7 +264,6 @@ final class CalendarUtil {
         date.set(calendar.getYear(), calendar.getMonth() - 1, calendar.getDay());
         return date.get(java.util.Calendar.DAY_OF_WEEK) - 1;
     }
-
 
     /**
      * 获取周视图的切换默认选项位置 WeekView index
@@ -360,7 +338,6 @@ final class CalendarUtil {
         return count / 7;
     }
 
-
     /**
      * 根据日期获取距离最小日期在第几周
      * 用来设置 WeekView currentItem
@@ -417,7 +394,6 @@ final class CalendarUtil {
 
         long firstTimeMills = date.getTimeInMillis();//获得起始时间戳
 
-
         long weekTimeMills = (week - 1) * 7 * ONE_DAY;
 
         long timeCountMills = weekTimeMills + firstTimeMills;
@@ -438,7 +414,6 @@ final class CalendarUtil {
 
         return calendar;
     }
-
 
     /**
      * 是否在日期范围内
@@ -473,6 +448,7 @@ final class CalendarUtil {
     /**
      * 运算 calendar1 - calendar2
      * test Pass
+     *
      * @param calendar1 calendar1
      * @param calendar2 calendar2
      * @return calendar1 - calendar2
@@ -630,10 +606,9 @@ final class CalendarUtil {
      * @return 生成周视图的7个item
      */
     static List<Calendar> initCalendarForWeekView(Calendar calendar, CalendarViewDelegate mDelegate, int weekStart) {
-
-        java.util.Calendar date = java.util.Calendar.getInstance();//当天时间
+        java.util.Calendar date = java.util.Calendar.getInstance(); // 当天时间
         date.set(calendar.getYear(), calendar.getMonth() - 1, calendar.getDay());
-        long curDateMills = date.getTimeInMillis();//生成选择的日期时间戳
+        long curDateMills = date.getTimeInMillis(); // 生成选择的日期时间戳
 
         int weekEndDiff = getWeekViewEndDiff(calendar.getYear(), calendar.getMonth(), calendar.getDay(), weekStart);
         List<Calendar> mItems = new ArrayList<>();
@@ -649,7 +624,6 @@ final class CalendarUtil {
         LunarCalendar.setupLunarCalendar(selectCalendar);
         selectCalendar.setCurrentMonth(true);
         mItems.add(selectCalendar);
-
 
         for (int i = 1; i <= weekEndDiff; i++) {
             date.setTimeInMillis(curDateMills + i * ONE_DAY);
@@ -679,7 +653,7 @@ final class CalendarUtil {
      */
     private static int getWeekViewStartDiff(int year, int month, int day, int weekStart) {
         java.util.Calendar date = java.util.Calendar.getInstance();
-        date.set(year, month - 1, day);//
+        date.set(year, month - 1, day);
         int week = date.get(java.util.Calendar.DAY_OF_WEEK);
         if (weekStart == 1) {
             return week - 1;
@@ -689,7 +663,6 @@ final class CalendarUtil {
         }
         return week == 7 ? 0 : week;
     }
-
 
     /**
      * 单元测试通过
@@ -713,7 +686,6 @@ final class CalendarUtil {
         }
         return week == 7 ? 6 : 7 - week - 1;
     }
-
 
     /**
      * 从月视图切换获得第一天的日期
@@ -740,7 +712,6 @@ final class CalendarUtil {
         LunarCalendar.setupLunarCalendar(calendar);
         return calendar;
     }
-
 
     /**
      * 根据传入的日期获取边界访问日期，要么最大，要么最小

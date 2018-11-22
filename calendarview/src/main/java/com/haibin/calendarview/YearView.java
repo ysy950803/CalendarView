@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.content.Context;
@@ -29,7 +14,6 @@ import java.util.List;
 
 /**
  * 年视图
- * Created by huanghaibin on 2018/10/9.
  */
 @SuppressWarnings("unused")
 public abstract class YearView extends View {
@@ -170,7 +154,6 @@ public abstract class YearView extends View {
         initPaint();
     }
 
-
     /**
      * 初始化配置
      */
@@ -262,6 +245,7 @@ public abstract class YearView extends View {
 
     /**
      * 初始化年视图
+     *
      * @param year  year
      * @param month month
      */
@@ -275,7 +259,6 @@ public abstract class YearView extends View {
 
         mLineCount = 6;
         addSchemesFromMap();
-
     }
 
     /**
@@ -285,7 +268,6 @@ public abstract class YearView extends View {
      * @param height height
      */
     final void measureSize(int width, int height) {
-
         Rect rect = new Rect();
         mCurMonthTextPaint.getTextBounds("1", 0, 1, rect);
         int textHeight = rect.height();
@@ -373,8 +355,8 @@ public abstract class YearView extends View {
             return;
         }
         int week = mDelegate.getWeekStart();
-        if(week > 0){
-            week-=1;
+        if (week > 0) {
+            week -= 1;
         }
         int width = (getWidth() - 2 * mDelegate.getYearViewPadding()) / 7;
         for (int i = 0; i < 7; i++) {
@@ -390,7 +372,6 @@ public abstract class YearView extends View {
             if (week >= 7) {
                 week = 0;
             }
-
         }
     }
 
@@ -400,7 +381,6 @@ public abstract class YearView extends View {
      * @param canvas canvas
      */
     private void onDrawMonthView(Canvas canvas) {
-
         int count = mLineCount * 7;
         int d = 0;
         for (int i = 0; i < mLineCount; i++) {
@@ -463,9 +443,8 @@ public abstract class YearView extends View {
      * 2、绘制矩形选中效果，也可以在这里计算矩形宽和高
      */
     protected void onPreviewHook() {
-        // TODO: 2017/11/16
-    }
 
+    }
 
     /**
      * 绘制月份
@@ -480,7 +459,6 @@ public abstract class YearView extends View {
      */
     protected abstract void onDrawMonth(Canvas canvas, int year, int month, int x, int y, int width, int height);
 
-
     /**
      * 绘制年视图的周栏
      *
@@ -492,7 +470,6 @@ public abstract class YearView extends View {
      * @param height height
      */
     protected abstract void onDrawWeek(Canvas canvas, int week, int x, int y, int width, int height);
-
 
     /**
      * 绘制选中的日期
@@ -515,7 +492,6 @@ public abstract class YearView extends View {
      * @param y        日历Card y起点坐标
      */
     protected abstract void onDrawScheme(Canvas canvas, Calendar calendar, int x, int y);
-
 
     /**
      * 绘制日历文本

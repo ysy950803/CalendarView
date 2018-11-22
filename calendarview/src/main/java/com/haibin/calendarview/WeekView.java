@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.content.Context;
@@ -21,7 +6,6 @@ import android.view.View;
 
 /**
  * 周视图，因为日历UI采用热插拔实现，所以这里必须继承实现，达到UI一致即可
- * Created by huanghaibin on 2017/11/21.
  */
 public abstract class WeekView extends BaseWeekView {
 
@@ -48,12 +32,12 @@ public abstract class WeekView extends BaseWeekView {
             boolean isSelected = i == mCurrentItem;
             boolean hasScheme = calendar.hasScheme();
             if (hasScheme) {
-                boolean isDrawSelected = false;//是否继续绘制选中的onDrawScheme
+                boolean isDrawSelected = false; // 是否继续绘制选中的onDrawScheme
                 if (isSelected) {
                     isDrawSelected = onDrawSelected(canvas, calendar, x, true);
                 }
                 if (isDrawSelected || !isSelected) {
-                    //将画笔设置为标记颜色
+                    // 将画笔设置为标记颜色
                     mSchemePaint.setColor(calendar.getSchemeColor() != 0 ? calendar.getSchemeColor() : mDelegate.getSchemeThemeColor());
                     onDrawScheme(canvas, calendar, x);
                 }
@@ -103,7 +87,6 @@ public abstract class WeekView extends BaseWeekView {
         invalidate();
     }
 
-
     @Override
     public boolean onLongClick(View v) {
         if (mDelegate.mCalendarLongClickListener == null)
@@ -128,13 +111,12 @@ public abstract class WeekView extends BaseWeekView {
             return true;
         }
 
-        if (mDelegate.isPreventLongPressedSelected()) {//如果启用拦截长按事件不选择日期
+        if (mDelegate.isPreventLongPressedSelected()) { // 如果启用拦截长按事件不选择日期
             if (mDelegate.mCalendarLongClickListener != null) {
                 mDelegate.mCalendarLongClickListener.onCalendarLongClick(calendar);
             }
             return true;
         }
-
 
         mCurrentItem = mItems.indexOf(calendar);
 

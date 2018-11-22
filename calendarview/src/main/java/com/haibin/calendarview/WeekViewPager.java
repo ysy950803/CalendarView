@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.annotation.SuppressLint;
@@ -32,8 +17,8 @@ import java.util.List;
  * 周视图是连续不断的视图，因此不能简单的得出每年都有52+1周，这样会计算重叠的部分
  * WeekViewPager需要和CalendarView关联:
  */
-
 public final class WeekViewPager extends ViewPager {
+
     private boolean isUpdateWeekView;
     private int mWeekCount;
     private CalendarViewDelegate mDelegate;
@@ -79,7 +64,7 @@ public final class WeekViewPager extends ViewPager {
 
             @Override
             public void onPageSelected(int position) {
-                //默认的显示星期四，周视图切换就显示星期4
+                // 默认的显示星期四，周视图切换就显示星期4
                 if (getVisibility() != VISIBLE) {
                     isUsingScrollToCalendar = false;
                     return;
@@ -88,7 +73,7 @@ public final class WeekViewPager extends ViewPager {
                     isUsingScrollToCalendar = false;
                     return;
                 }
-                BaseWeekView view = (BaseWeekView) findViewWithTag(position);
+                BaseWeekView view = findViewWithTag(position);
                 if (view != null) {
                     view.performClickCalendar(mDelegate.getSelectMode() != CalendarViewDelegate.SELECT_MODE_DEFAULT ?
                             mDelegate.mIndexCalendar : mDelegate.mSelectedCalendar, !isUsingScrollToCalendar);
@@ -117,7 +102,6 @@ public final class WeekViewPager extends ViewPager {
         mDelegate.addSchemesFromMap(calendars);
         return calendars;
     }
-
 
     /**
      * 更新周视图
@@ -212,7 +196,7 @@ public final class WeekViewPager extends ViewPager {
             isUsingScrollToCalendar = false;
         }
         setCurrentItem(position, smoothScroll);
-        BaseWeekView view = (BaseWeekView) findViewWithTag(position);
+        BaseWeekView view = findViewWithTag(position);
         if (view != null) {
             view.performClickCalendar(mDelegate.getCurrentDay(), false);
             view.setSelectedCalendar(mDelegate.getCurrentDay());
@@ -242,13 +226,12 @@ public final class WeekViewPager extends ViewPager {
         int curItem = getCurrentItem();
         isUsingScrollToCalendar = curItem != position;
         setCurrentItem(position, smoothScroll);
-        BaseWeekView view = (BaseWeekView) findViewWithTag(position);
+        BaseWeekView view = findViewWithTag(position);
         if (view != null) {
             view.setSelectedCalendar(calendar);
             view.invalidate();
         }
     }
-
 
     /**
      * 更新单选模式
@@ -267,7 +250,7 @@ public final class WeekViewPager extends ViewPager {
      * 更新为默认选择模式
      */
     void updateDefaultSelect() {
-        BaseWeekView view = (BaseWeekView) findViewWithTag(getCurrentItem());
+        BaseWeekView view = findViewWithTag(getCurrentItem());
         if (view != null) {
             view.setSelectedCalendar(mDelegate.mSelectedCalendar);
             view.invalidate();
@@ -284,7 +267,6 @@ public final class WeekViewPager extends ViewPager {
             view.invalidate();
         }
     }
-
 
     /**
      * 更新标记日期
@@ -439,6 +421,5 @@ public final class WeekViewPager extends ViewPager {
             view.onDestroy();
             container.removeView(view);
         }
-
     }
 }

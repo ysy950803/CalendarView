@@ -1,30 +1,11 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
-
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -36,26 +17,15 @@ import android.view.animation.LinearInterpolator;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
 
-
 /**
  * 日历布局
  */
 public class CalendarLayout extends LinearLayout {
 
     /**
-     * 多点触控支持
-     */
-    private int mActivePointerId;
-
-    private static final int ACTIVE_POINTER = 1;
-
-    private static final int INVALID_POINTER = -1;
-
-    /**
      * 周月视图
      */
     private static final int CALENDAR_SHOW_MODE_BOTH_MONTH_WEEK_VIEW = 0;
-
 
     /**
      * 仅周视图
@@ -70,12 +40,12 @@ public class CalendarLayout extends LinearLayout {
     /**
      * 默认展开
      */
-    private static final int STATUS_EXPAND = 0;
+    public static final int STATUS_EXPAND = 0;
 
     /**
      * 默认收缩
      */
-    private static final int STATUS_SHRINK = 1;
+    public static final int STATUS_SHRINK = 1;
 
     /**
      * 默认状态
@@ -112,10 +82,10 @@ public class CalendarLayout extends LinearLayout {
      */
     private static final int GESTURE_MODE_DEFAULT = 0;
 
-//       /**
-    //     * 仅日历有效
-    //     */
-//    private static final int GESTURE_MODE_ONLY_CALENDAR = 1;
+    /**
+     * 仅日历有效
+     */
+    private static final int GESTURE_MODE_ONLY_CALENDAR = 1;
 
     /**
      * 禁用手势
@@ -127,16 +97,17 @@ public class CalendarLayout extends LinearLayout {
      */
     private int mGestureMode;
 
-
     private int mCalendarShowMode;
 
     private int mTouchSlop;
-    private int mContentViewTranslateY; //ContentView  可滑动的最大距离距离 , 固定
-    private int mViewPagerTranslateY = 0;// ViewPager可以平移的距离，不代表mMonthView的平移距离
+    private int mContentViewTranslateY; // ContentView 可滑动的最大距离距离，固定
+    private int mViewPagerTranslateY = 0; // ViewPager可以平移的距离，不代表mMonthView的平移距离
 
     private float downY;
     private float mLastY;
     private boolean isAnimating = false;
+    private boolean isTouchDownContentView;
+    private boolean isContentViewAlignedTop;
 
     /**
      * 内容布局id
@@ -152,6 +123,7 @@ public class CalendarLayout extends LinearLayout {
     private int mItemHeight;
 
     private CalendarViewDelegate mDelegate;
+    private ContentViewListener mContentViewListener;
 
     public CalendarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -166,6 +138,21 @@ public class CalendarLayout extends LinearLayout {
         final ViewConfiguration configuration = ViewConfiguration.get(context);
         mTouchSlop = configuration.getScaledTouchSlop();
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
+    }
+
+    public void resetDefaultStatus() {
+        setDefaultStatus(mDefaultStatus);
+    }
+
+    public void setDefaultStatus(int status) {
+        isContentViewAlignedTop = false;
+        isTouchDownContentView = false;
+        mDefaultStatus = status;
+        if (status == STATUS_SHRINK) {
+            shrink();
+        } else if (status == STATUS_EXPAND) {
+            expand();
+        }
     }
 
     /**
@@ -212,7 +199,6 @@ public class CalendarLayout extends LinearLayout {
         mViewPagerTranslateY = (week - 1) * mItemHeight;
     }
 
-
     /**
      * 更新内容ContentView可平移的最大距离
      */
@@ -221,14 +207,14 @@ public class CalendarLayout extends LinearLayout {
         if (mDelegate.getMonthViewShowMode() == CalendarViewDelegate.MODE_ALL_MONTH) {
             mContentViewTranslateY = 5 * mItemHeight;
         } else {
-            mContentViewTranslateY = CalendarUtil.getMonthViewHeight(calendar.getYear(), calendar.getMonth(), mItemHeight, mDelegate.getWeekStart())
-                    - mItemHeight;
+            mContentViewTranslateY = CalendarUtil.getMonthViewHeight(calendar.getYear(),
+                    calendar.getMonth(), mItemHeight, mDelegate.getWeekStart()) - mItemHeight;
         }
-        //已经显示周视图，则需要动态平移contentView的高度
+        // 已经显示周视图，则需要动态平移contentView的高度
         if (mWeekPager.getVisibility() == VISIBLE) {
             if (mContentView == null)
                 return;
-            mContentView.setTranslationY(-mContentViewTranslateY);
+            translateContentView(-mContentViewTranslateY);
         }
     }
 
@@ -247,21 +233,16 @@ public class CalendarLayout extends LinearLayout {
             mContentViewTranslateY = CalendarUtil.getMonthViewHeight(calendar.getYear(), calendar.getMonth(),
                     mItemHeight, mDelegate.getWeekStart()) - mItemHeight;
         }
-        translationViewPager();
+        translateViewPager();
         if (mWeekPager.getVisibility() == VISIBLE) {
-            mContentView.setTranslationY(-mContentViewTranslateY);
+            translateContentView(-mContentViewTranslateY);
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-        if (mDelegate.isShowYearSelectedLayout) {
-            return false;
-        }
-
-        if (mContentView == null) {
+        if (mDelegate.isShowYearSelectedLayout || mContentView == null || isContentViewAlignedTop) {
             return false;
         }
 
@@ -270,100 +251,61 @@ public class CalendarLayout extends LinearLayout {
         mVelocityTracker.addMovement(event);
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-
-                int index = MotionEventCompat.getActionIndex(event);
-                mActivePointerId = MotionEventCompat.getPointerId(event, index);
                 mLastY = downY = y;
+                isTouchDownContentView = downY > mContentView.getTranslationY() + mContentView.getTop();
                 return true;
-            case MotionEventCompat.ACTION_POINTER_DOWN: {
-                final int indexx = MotionEventCompat.getActionIndex(event);
-                mActivePointerId = MotionEventCompat.getPointerId(event, indexx);
-                if (mActivePointerId == 0) {
-                    //核心代码：就是让下面的 dy = y- mLastY == 0，避免抖动
-                    mLastY = MotionEventCompat.getY(event, mActivePointerId);
-                }
-                break;
-            }
             case MotionEvent.ACTION_MOVE:
                 if (mGestureMode == GESTURE_MODE_DISABLED ||
                         mCalendarShowMode == CALENDAR_SHOW_MODE_ONLY_MONTH_VIEW ||
-                        mCalendarShowMode == CALENDAR_SHOW_MODE_ONLY_WEEK_VIEW) {//禁用手势，或者只显示某种视图
+                        mCalendarShowMode == CALENDAR_SHOW_MODE_ONLY_WEEK_VIEW) {
+                    // 禁用手势，或者只显示某种视图，不继续逻辑
                     return false;
-                }
-
-
-                getPointerIndex(event, mActivePointerId);
-                if (mActivePointerId == INVALID_POINTER) {
-                    //如果切换了手指，那把mLastY换到最新手指的y坐标即可，核心就是让下面的 dy== 0，避免抖动
-                    mLastY = y;
-                    mActivePointerId = ACTIVE_POINTER;
                 }
 
                 float dy = y - mLastY;
-                //向上滑动，并且contentView平移到最大距离，显示周视图
-                if (dy < 0 && mContentView.getTranslationY() == -mContentViewTranslateY) {
-                    //mContentView.onTouchEvent(event);
-                    showWeek();
-                    mLastY = y;
-                    return false;
+                if (dy < 0) { // 向上滑动
+                    // contentView已经平移到最大距离
+                    if (mContentView.getTranslationY() + dy <= -mContentViewTranslateY) {
+                        translateContentView(-mContentViewTranslateY);
+                        translateViewPager();
+                        mLastY = y;
+                        onContentViewTranslateToTop();
+                        break;
+                    }
+                } else { // 向下滑动
+                    // contentView已经完全平移到底部
+                    if (mContentView.getTranslationY() + dy >= 0) {
+                        translateContentView(0);
+                        translateViewPager();
+                        mLastY = y;
+                        break;
+                    }
                 }
                 hideWeek();
 
-                //向下滑动，并且contentView已经完全平移到底部
-                if (dy > 0 && mContentView.getTranslationY() + dy >= 0) {
-                    mContentView.setTranslationY(0);
-                    translationViewPager();
-                    mLastY = y;
-                    return super.onTouchEvent(event);
-                }
-
-                //向上滑动，并且contentView已经平移到最大距离，则contentView平移到最大的距离
-                if (dy < 0 && mContentView.getTranslationY() + dy <= -mContentViewTranslateY) {
-                    mContentView.setTranslationY(-mContentViewTranslateY);
-                    translationViewPager();
-                    mLastY = y;
-                    return super.onTouchEvent(event);
-                }
-                //否则按比例平移
-                mContentView.setTranslationY(mContentView.getTranslationY() + dy);
-                translationViewPager();
+                // 否则按比例平移
+                translateContentView(mContentView.getTranslationY() + dy);
+                translateViewPager();
                 mLastY = y;
                 break;
-            case MotionEvent.ACTION_CANCEL:
-
-            case MotionEvent.ACTION_POINTER_UP:
-                int pointerIndex = getPointerIndex(event, mActivePointerId);
-                if (mActivePointerId == INVALID_POINTER)
-                    break;
-                mLastY = MotionEventCompat.getY(event, pointerIndex);
-                break;
             case MotionEvent.ACTION_UP:
-
+                if (mContentView.getTranslationY() == 0
+                        || mContentView.getTranslationY() == -mContentViewTranslateY) {
+                    break;
+                }
+                // 获取手速
                 final VelocityTracker velocityTracker = mVelocityTracker;
                 velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                 float mYVelocity = velocityTracker.getYVelocity();
-                if (mContentView.getTranslationY() == 0
-                        || mContentView.getTranslationY() == mContentViewTranslateY) {
-                    break;
-                }
-                if (Math.abs(mYVelocity) >= 800) {
-                    if (mYVelocity < 0) {
-                        shrink();
-                    } else {
-                        expand();
-                    }
-                    return super.onTouchEvent(event);
-                }
-                if (event.getY() - downY > 0) {
+                if (mYVelocity > 800 || event.getY() - downY > 0) {
                     expand();
-                } else {
+                } else if (mYVelocity < -800 || event.getY() - downY < 0) {
                     shrink();
                 }
                 break;
         }
         return super.onTouchEvent(event);
     }
-
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -391,22 +333,20 @@ public class CalendarLayout extends LinearLayout {
         float y = ev.getY();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                int index = MotionEventCompat.getActionIndex(ev);
-                mActivePointerId = MotionEventCompat.getPointerId(ev, index);
                 mLastY = downY = y;
                 break;
             case MotionEvent.ACTION_MOVE:
                 float dy = y - mLastY;
-                 /*
-                   如果向上滚动，且ViewPager已经收缩，不拦截事件
+                /*
+                 * 如果向上滚动，且ViewPager已经收缩，不拦截事件
                  */
                 if (dy < 0 && mContentView.getTranslationY() == -mContentViewTranslateY) {
                     return false;
                 }
                 /*
-                 * 如果向下滚动，有 2 种情况处理 且y在ViewPager下方
-                 * 1、RecyclerView 或者其它滚动的View，当mContentView滚动到顶部时，拦截事件
-                 * 2、非滚动控件，直接拦截事件
+                 * 如果向下滚动，有2种情况处理，且y在ViewPager下方
+                 * 1. RecyclerView 或者其它滚动的View，当contentView滚动到顶部时，拦截事件
+                 * 2. 非滚动控件，直接拦截事件
                  */
                 if (dy > 0 && mContentView.getTranslationY() == -mContentViewTranslateY
                         && y >= CalendarUtil.dipToPx(getContext(), 98)) {
@@ -419,7 +359,7 @@ public class CalendarLayout extends LinearLayout {
                     return false;
                 }
 
-                if (Math.abs(dy) > mTouchSlop) {//大于mTouchSlop开始拦截事件，ContentView和ViewPager得到CANCEL事件
+                if (Math.abs(dy) > mTouchSlop) { // 大于mTouchSlop开始拦截事件，ContentView和ViewPager得到CANCEL事件
                     if ((dy > 0 && mContentView.getTranslationY() <= 0)
                             || (dy < 0 && mContentView.getTranslationY() >= -mContentViewTranslateY)) {
                         mLastY = y;
@@ -431,34 +371,24 @@ public class CalendarLayout extends LinearLayout {
         return super.onInterceptTouchEvent(ev);
     }
 
-
-    private int getPointerIndex(MotionEvent ev, int id) {
-        int activePointerIndex = MotionEventCompat.findPointerIndex(ev, id);
-        if (activePointerIndex == -1) {
-            mActivePointerId = INVALID_POINTER;
-        }
-        return activePointerIndex;
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-
         if (mContentView != null && mMonthView != null) {
             int year = mDelegate.mIndexCalendar.getYear();
             int month = mDelegate.mIndexCalendar.getMonth();
 
             int monthHeight = CalendarUtil.getMonthViewHeight(year, month,
                     mDelegate.getCalendarItemHeight(),
-                    mDelegate.getWeekStart()) + CalendarUtil.dipToPx(getContext(),41);
+                    mDelegate.getWeekStart()) + CalendarUtil.dipToPx(getContext(), 41);
             int height = getHeight();
 
-            if(monthHeight >= height && mMonthView.getHeight() >0 ){
+            if (monthHeight >= height && mMonthView.getHeight() > 0) {
                 height = monthHeight;
                 heightMeasureSpec = MeasureSpec.makeMeasureSpec(monthHeight +
                         CalendarUtil.dipToPx(getContext(), 41) +
-                        mDelegate.getWeekBarHeight() , MeasureSpec.EXACTLY);
-            }else if(monthHeight < height && mMonthView.getHeight()>0){
-                heightMeasureSpec = MeasureSpec.makeMeasureSpec(height,MeasureSpec.EXACTLY);
+                        mDelegate.getWeekBarHeight(), MeasureSpec.EXACTLY);
+            } else if (monthHeight < height && mMonthView.getHeight() > 0) {
+                heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
             }
 
             int h = height - mItemHeight
@@ -470,7 +400,7 @@ public class CalendarLayout extends LinearLayout {
                     MeasureSpec.EXACTLY);
             mContentView.measure(widthMeasureSpec, heightSpec);
             mContentView.layout(mContentView.getLeft(), mContentView.getTop(), mContentView.getRight(), mContentView.getBottom());
-        }else {
+        } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
@@ -478,24 +408,29 @@ public class CalendarLayout extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mMonthView = (MonthViewPager) findViewById(R.id.vp_month);
-        mWeekPager = (WeekViewPager) findViewById(R.id.vp_week);
-        mContentView = (ViewGroup) findViewById(mContentViewId);
-        mYearView = (YearViewSelectLayout) findViewById(R.id.selectLayout);
+        mMonthView = findViewById(R.id.vp_month);
+        mWeekPager = findViewById(R.id.vp_week);
+        mContentView = findViewById(mContentViewId);
+        mYearView = findViewById(R.id.selectLayout);
         if (mContentView != null) {
             mContentView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
     }
 
-
     /**
      * 平移ViewPager月视图
      */
-    private void translationViewPager() {
+    private void translateViewPager() {
         float percent = mContentView.getTranslationY() * 1.0f / mContentViewTranslateY;
         mMonthView.setTranslationY(mViewPagerTranslateY * percent);
     }
 
+    /**
+     * 平移ContentView
+     */
+    private void translateContentView(float tY) {
+        mContentView.setTranslationY(tY);
+    }
 
     /**
      * 是否展开了
@@ -505,7 +440,6 @@ public class CalendarLayout extends LinearLayout {
     public final boolean isExpand() {
         return mContentView == null || mMonthView.getVisibility() == VISIBLE;
     }
-
 
     /**
      * 展开
@@ -525,14 +459,11 @@ public class CalendarLayout extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mContentView,
                 "translationY", mContentView.getTranslationY(), 0f);
         objectAnimator.setDuration(240);
-        objectAnimator.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float currentValue = (Float) animation.getAnimatedValue();
-                float percent = currentValue * 1.0f / mContentViewTranslateY;
-                mMonthView.setTranslationY(mViewPagerTranslateY * percent);
-                isAnimating = true;
-            }
+        objectAnimator.addUpdateListener(animation -> {
+            float currentValue = (Float) animation.getAnimatedValue();
+            float percent = currentValue * 1.0f / mContentViewTranslateY;
+            mMonthView.setTranslationY(mViewPagerTranslateY * percent);
+            isAnimating = true;
         });
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -540,13 +471,11 @@ public class CalendarLayout extends LinearLayout {
                 super.onAnimationEnd(animation);
                 isAnimating = false;
                 hideWeek();
-
             }
         });
         objectAnimator.start();
         return true;
     }
-
 
     /**
      * 收缩
@@ -560,14 +489,11 @@ public class CalendarLayout extends LinearLayout {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mContentView,
                 "translationY", mContentView.getTranslationY(), -mContentViewTranslateY);
         objectAnimator.setDuration(240);
-        objectAnimator.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float currentValue = (Float) animation.getAnimatedValue();
-                float percent = currentValue * 1.0f / mContentViewTranslateY;
-                mMonthView.setTranslationY(mViewPagerTranslateY * percent);
-                isAnimating = true;
-            }
+        objectAnimator.addUpdateListener(animation -> {
+            float currentValue = (Float) animation.getAnimatedValue();
+            float percent = currentValue * 1.0f / mContentViewTranslateY;
+            mMonthView.setTranslationY(mViewPagerTranslateY * percent);
+            isAnimating = true;
         });
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -575,7 +501,7 @@ public class CalendarLayout extends LinearLayout {
                 super.onAnimationEnd(animation);
                 isAnimating = false;
                 showWeek();
-
+                onContentViewTranslateToTop();
             }
         });
         objectAnimator.start();
@@ -598,14 +524,11 @@ public class CalendarLayout extends LinearLayout {
                     ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(mContentView,
                             "translationY", mContentView.getTranslationY(), -mContentViewTranslateY);
                     objectAnimator.setDuration(0);
-                    objectAnimator.addUpdateListener(new AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            float currentValue = (Float) animation.getAnimatedValue();
-                            float percent = currentValue * 1.0f / mContentViewTranslateY;
-                            mMonthView.setTranslationY(mViewPagerTranslateY * percent);
-                            isAnimating = true;
-                        }
+                    objectAnimator.addUpdateListener(animation -> {
+                        float currentValue = (Float) animation.getAnimatedValue();
+                        float percent = currentValue * 1.0f / mContentViewTranslateY;
+                        mMonthView.setTranslationY(mViewPagerTranslateY * percent);
+                        isAnimating = true;
                     });
                     objectAnimator.addListener(new AnimatorListenerAdapter() {
                         @Override
@@ -613,7 +536,6 @@ public class CalendarLayout extends LinearLayout {
                             super.onAnimationEnd(animation);
                             isAnimating = false;
                             showWeek();
-
                         }
                     });
                     objectAnimator.start();
@@ -623,12 +545,7 @@ public class CalendarLayout extends LinearLayout {
             if (mDelegate.mViewChangeListener == null) {
                 return;
             }
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    mDelegate.mViewChangeListener.onViewChange(true);
-                }
-            });
+            post(() -> mDelegate.mViewChangeListener.onViewChange(true));
         }
     }
 
@@ -663,7 +580,6 @@ public class CalendarLayout extends LinearLayout {
         }
     }
 
-
     /**
      * 周视图显示事件
      */
@@ -682,6 +598,9 @@ public class CalendarLayout extends LinearLayout {
      * @return 是否滚动到顶部
      */
     protected boolean isScrollTop() {
+        if (!isContentViewAlignedTop) {
+            return true;
+        }
         if (mContentView instanceof CalendarScrollView) {
             return ((CalendarScrollView) mContentView).isScrollToTop();
         }
@@ -698,7 +617,6 @@ public class CalendarLayout extends LinearLayout {
         }
         return mContentView.getScrollY() == 0;
     }
-
 
     /**
      * 隐藏内容布局
@@ -728,7 +646,7 @@ public class CalendarLayout extends LinearLayout {
     final void showContentView() {
         if (mContentView == null)
             return;
-        mContentView.setTranslationY(getHeight() - mMonthView.getHeight());
+        translateContentView(getHeight() - mMonthView.getHeight());
         mContentView.setVisibility(VISIBLE);
         mContentView.animate()
                 .translationY(0)
@@ -741,7 +659,6 @@ public class CalendarLayout extends LinearLayout {
                     }
                 });
     }
-
 
     @SuppressWarnings("unused")
     private int getCalendarViewHeight() {
@@ -759,5 +676,27 @@ public class CalendarLayout extends LinearLayout {
          * @return 是否滚动到顶部
          */
         boolean isScrollToTop();
+    }
+
+    public interface ContentViewListener {
+        /**
+         * ContentView平移到周视图状态
+         */
+        void onTranslateToTop();
+    }
+
+    public void setContentViewListener(ContentViewListener listener) {
+        mContentViewListener = listener;
+    }
+
+    private void onContentViewTranslateToTop() {
+        if (mContentViewListener != null && isTouchDownContentView) {
+            mContentViewListener.onTranslateToTop();
+            isContentViewAlignedTop = true;
+        }
+    }
+
+    public boolean isContentViewAlignedTop() {
+        return isContentViewAlignedTop;
     }
 }

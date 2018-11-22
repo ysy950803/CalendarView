@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.content.Context;
@@ -27,7 +12,7 @@ import java.util.List;
 /**
  * 基本的适配器
  */
-abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
+public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
 
     LayoutInflater mInflater;
     private List<T> mItems;
@@ -35,7 +20,7 @@ abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
     private OnClickListener onClickListener;
     Context mContext;
 
-    BaseRecyclerAdapter(Context context) {
+    public BaseRecyclerAdapter(Context context) {
         mContext = context;
         this.mItems = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
@@ -46,7 +31,6 @@ abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
                     onItemClickListener.onItemClick(position, itemId);
             }
         };
-
     }
 
     @Override
@@ -73,19 +57,19 @@ abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
         return mItems.size();
     }
 
-    void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
     @SuppressWarnings("unused")
-    void addAll(List<T> items) {
+    public void addAll(List<T> items) {
         if (items != null && items.size() > 0) {
             mItems.addAll(items);
             notifyItemRangeInserted(mItems.size(), items.size());
         }
     }
 
-    final void addItem(T item) {
+    public final void addItem(T item) {
         if (item != null) {
             this.mItems.add(item);
             notifyItemChanged(mItems.size());
@@ -93,12 +77,11 @@ abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
     }
 
     @SuppressWarnings("unused")
-    final List<T> getItems() {
+    public final List<T> getItems() {
         return mItems;
     }
 
-
-    final T getItem(int position) {
+    public final T getItem(int position) {
         if (position < 0 || position >= mItems.size())
             return null;
         return mItems.get(position);
@@ -114,8 +97,7 @@ abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
         public abstract void onClick(int position, long itemId);
     }
 
-
-    interface OnItemClickListener {
+    public interface OnItemClickListener {
         void onItemClick(int position, long itemId);
     }
 }

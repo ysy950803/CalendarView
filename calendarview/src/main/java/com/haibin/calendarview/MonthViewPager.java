@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.annotation.SuppressLint;
@@ -25,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.reflect.Constructor;
-
 
 /**
  * 月份切换ViewPager，自定义适应高度
@@ -84,19 +68,19 @@ public final class MonthViewPager extends ViewPager {
                 - mDelegate.getMinYearMonth() + 1 +
                 mDelegate.getMaxYearMonth();
         setAdapter(new MonthViewPagerAdapter());
-        addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        addOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if (mDelegate.getMonthViewShowMode() == CalendarViewDelegate.MODE_ALL_MONTH) {
                     return;
                 }
                 int height;
-                if (position < getCurrentItem()) {//右滑-1
+                if (position < getCurrentItem()) { // 右滑-1
                     height = (int) ((mPreViewHeight)
                             * (1 - positionOffset) +
                             mCurrentViewHeight
                                     * positionOffset);
-                } else {//左滑+！
+                } else { // 左滑+1
                     height = (int) ((mCurrentViewHeight)
                             * (1 - positionOffset) +
                             (mNextViewHeight)
@@ -111,12 +95,12 @@ public final class MonthViewPager extends ViewPager {
             public void onPageSelected(int position) {
                 Calendar calendar = CalendarUtil.getFirstCalendarFromMonthViewPager(position, mDelegate);
                 mDelegate.mIndexCalendar = calendar;
-                //月份改变事件
+                // 月份改变事件
                 if (mDelegate.mMonthChangeListener != null) {
                     mDelegate.mMonthChangeListener.onMonthChange(calendar.getYear(), calendar.getMonth());
                 }
 
-                //周视图显示的时候就需要动态改变月视图高度
+                // 周视图显示的时候就需要动态改变月视图高度
                 if (mWeekPager.getVisibility() == VISIBLE) {
                     updateMonthViewHeight(calendar.getYear(), calendar.getMonth());
                     return;
@@ -149,7 +133,7 @@ public final class MonthViewPager extends ViewPager {
                     }
                 }
 
-                BaseMonthView view = (BaseMonthView) findViewWithTag(position);
+                BaseMonthView view = findViewWithTag(position);
                 if (view != null) {
                     int index = view.getSelectedIndex(mDelegate.mIndexCalendar);
                     if (mDelegate.getSelectMode() == CalendarViewDelegate.SELECT_MODE_DEFAULT) {
@@ -179,13 +163,13 @@ public final class MonthViewPager extends ViewPager {
      * @param month month
      */
     private void updateMonthViewHeight(int year, int month) {
-        if (mDelegate.getMonthViewShowMode() == CalendarViewDelegate.MODE_ALL_MONTH) {//非动态高度就不需要了
+        if (mDelegate.getMonthViewShowMode() == CalendarViewDelegate.MODE_ALL_MONTH) { // 非动态高度就不需要了
             mCurrentViewHeight = 6 * mDelegate.getCalendarItemHeight();
             return;
         }
 
         if (mParentLayout != null) {
-            if (getVisibility() != VISIBLE) {//如果已经显示周视图，则需要动态改变月视图高度，否则显示就有bug
+            if (getVisibility() != VISIBLE) { // 如果已经显示周视图，则需要动态改变月视图高度，否则显示就有bug
                 ViewGroup.LayoutParams params = getLayoutParams();
                 params.height = CalendarUtil.getMonthViewHeight(year, month, mDelegate.getCalendarItemHeight(), mDelegate.getWeekStart());
                 setLayoutParams(params);
@@ -240,7 +224,7 @@ public final class MonthViewPager extends ViewPager {
         int y = calendar.getYear() - mDelegate.getMinYear();
         int position = 12 * y + calendar.getMonth() - mDelegate.getMinYearMonth();
         setCurrentItem(position, false);
-        BaseMonthView view = (BaseMonthView) findViewWithTag(position);
+        BaseMonthView view = findViewWithTag(position);
         if (view != null) {
             view.setSelectedCalendar(mDelegate.mIndexCalendar);
             view.invalidate();
@@ -290,7 +274,7 @@ public final class MonthViewPager extends ViewPager {
         }
         setCurrentItem(position, smoothScroll);
 
-        BaseMonthView view = (BaseMonthView) findViewWithTag(position);
+        BaseMonthView view = findViewWithTag(position);
         if (view != null) {
             view.setSelectedCalendar(mDelegate.mIndexCalendar);
             view.invalidate();
@@ -327,7 +311,7 @@ public final class MonthViewPager extends ViewPager {
 
         setCurrentItem(position, smoothScroll);
 
-        BaseMonthView view = (BaseMonthView) findViewWithTag(position);
+        BaseMonthView view = findViewWithTag(position);
         if (view != null) {
             view.setSelectedCalendar(mDelegate.getCurrentDay());
             view.invalidate();
@@ -345,7 +329,7 @@ public final class MonthViewPager extends ViewPager {
      * 更新为默认选择模式
      */
     void updateDefaultSelect() {
-        BaseMonthView view = (BaseMonthView) findViewWithTag(getCurrentItem());
+        BaseMonthView view = findViewWithTag(getCurrentItem());
         if (view != null) {
             int index = view.getSelectedIndex(mDelegate.mSelectedCalendar);
             view.mCurrentItem = index;
@@ -553,6 +537,4 @@ public final class MonthViewPager extends ViewPager {
             container.removeView(view);
         }
     }
-
-
 }

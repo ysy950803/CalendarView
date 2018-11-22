@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.content.Context;
@@ -25,6 +10,7 @@ import android.util.AttributeSet;
  * 年份布局选择View
  */
 public final class YearRecyclerView extends RecyclerView {
+
     private CalendarViewDelegate mDelegate;
     private YearViewAdapter mAdapter;
     private OnMonthSelectedListener mListener;
@@ -38,21 +24,18 @@ public final class YearRecyclerView extends RecyclerView {
         mAdapter = new YearViewAdapter(context);
         setLayoutManager(new GridLayoutManager(context, 3));
         setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, long itemId) {
-                if (mListener != null && mDelegate != null) {
-                    Month month = mAdapter.getItem(position);
-                    if (month == null) {
-                        return;
-                    }
-                    if (!CalendarUtil.isMonthInRange(month.getYear(), month.getMonth(),
-                            mDelegate.getMinYear(), mDelegate.getMinYearMonth(),
-                            mDelegate.getMaxYear(), mDelegate.getMaxYearMonth())) {
-                        return;
-                    }
-                    mListener.onMonthSelected(month.getYear(), month.getMonth());
+        mAdapter.setOnItemClickListener((position, itemId) -> {
+            if (mListener != null && mDelegate != null) {
+                Month month = mAdapter.getItem(position);
+                if (month == null) {
+                    return;
                 }
+                if (!CalendarUtil.isMonthInRange(month.getYear(), month.getMonth(),
+                        mDelegate.getMinYear(), mDelegate.getMinYearMonth(),
+                        mDelegate.getMaxYear(), mDelegate.getMaxYearMonth())) {
+                    return;
+                }
+                mListener.onMonthSelected(month.getYear(), month.getMonth());
             }
         });
     }
@@ -103,7 +86,6 @@ public final class YearRecyclerView extends RecyclerView {
     final void setOnMonthSelectedListener(OnMonthSelectedListener listener) {
         this.mListener = listener;
     }
-
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {

@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.content.Context;
@@ -21,7 +6,6 @@ import android.view.View;
 
 /**
  * 月视图基础控件,可自由继承实现
- * Created by huanghaibin on 2017/11/15.
  */
 public abstract class MonthView extends BaseMonthView {
 
@@ -59,7 +43,6 @@ public abstract class MonthView extends BaseMonthView {
         }
     }
 
-
     /**
      * 开始绘制
      *
@@ -77,13 +60,13 @@ public abstract class MonthView extends BaseMonthView {
         boolean hasScheme = calendar.hasScheme();
 
         if (hasScheme) {
-            //标记的日子
-            boolean isDrawSelected = false;//是否继续绘制选中的onDrawScheme
+            // 标记的日子
+            boolean isDrawSelected = false; // 是否继续绘制选中的onDrawScheme
             if (isSelected) {
                 isDrawSelected = onDrawSelected(canvas, calendar, x, y, true);
             }
             if (isDrawSelected || !isSelected) {
-                //将画笔设置为标记颜色
+                // 将画笔设置为标记颜色
                 mSchemePaint.setColor(calendar.getSchemeColor() != 0 ? calendar.getSchemeColor() : mDelegate.getSchemeThemeColor());
                 onDrawScheme(canvas, calendar, x, y);
             }
@@ -94,7 +77,6 @@ public abstract class MonthView extends BaseMonthView {
         }
         onDrawText(canvas, calendar, x, y, hasScheme, isSelected);
     }
-
 
     @SuppressWarnings("deprecation")
     @Override
@@ -117,7 +99,6 @@ public abstract class MonthView extends BaseMonthView {
             mDelegate.mCalendarInterceptListener.onCalendarInterceptClick(calendar, true);
             return;
         }
-
 
         if (!isInRange(calendar)) {
             if (mDelegate.mCalendarSelectListener != null) {
@@ -144,7 +125,6 @@ public abstract class MonthView extends BaseMonthView {
             } else {
                 mParentLayout.updateSelectWeek(CalendarUtil.getWeekFromDayInMonth(calendar, mDelegate.getWeekStart()));
             }
-
         }
 
         if (mDelegate.mCalendarSelectListener != null) {
@@ -170,7 +150,6 @@ public abstract class MonthView extends BaseMonthView {
             return false;
         }
 
-
         if (onCalendarIntercept(calendar)) {
             mDelegate.mCalendarInterceptListener.onCalendarInterceptClick(calendar, true);
             return false;
@@ -192,7 +171,6 @@ public abstract class MonthView extends BaseMonthView {
             return true;
         }
 
-
         mCurrentItem = mItems.indexOf(calendar);
 
         if (!calendar.isCurrentMonth() && mMonthViewPager != null) {
@@ -211,7 +189,6 @@ public abstract class MonthView extends BaseMonthView {
             } else {
                 mParentLayout.updateSelectWeek(CalendarUtil.getWeekFromDayInMonth(calendar, mDelegate.getWeekStart()));
             }
-
         }
 
         if (mDelegate.mCalendarSelectListener != null) {
@@ -246,7 +223,6 @@ public abstract class MonthView extends BaseMonthView {
      * @param y        日历Card y起点坐标
      */
     protected abstract void onDrawScheme(Canvas canvas, Calendar calendar, int x, int y);
-
 
     /**
      * 绘制日历文本

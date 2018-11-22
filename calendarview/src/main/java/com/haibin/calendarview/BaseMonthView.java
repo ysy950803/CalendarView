@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.annotation.SuppressLint;
@@ -46,7 +31,6 @@ public abstract class BaseMonthView extends BaseView {
      */
     protected int mHeight;
 
-
     /**
      * 下个月偏移的数量
      */
@@ -71,7 +55,6 @@ public abstract class BaseMonthView extends BaseView {
         } else {
             mHeight = CalendarUtil.getMonthViewHeight(year, month, mItemHeight, mDelegate.getWeekStart());
         }
-
     }
 
     /**
@@ -79,7 +62,6 @@ public abstract class BaseMonthView extends BaseView {
      */
     @SuppressLint("WrongConstant")
     private void initCalendar() {
-
         mNextDiff = CalendarUtil.getMonthEndDiff(mYear, mMonth, mDelegate.getWeekStart());
         int preDiff = CalendarUtil.getMonthViewStartDiff(mYear, mMonth, mDelegate.getWeekStart());
         int monthDayCount = CalendarUtil.getMonthDaysCount(mYear, mMonth);
@@ -133,7 +115,6 @@ public abstract class BaseMonthView extends BaseView {
         mCurrentItem = mItems.indexOf(calendar);
     }
 
-
     /**
      * 更新显示模式
      */
@@ -169,14 +150,12 @@ public abstract class BaseMonthView extends BaseView {
         }
     }
 
-
-
     @Override
     void updateCurrentDate() {
         if (mItems == null)
             return;
         if (mItems.contains(mDelegate.getCurrentDay())) {
-            for (Calendar a : mItems) {//添加操作
+            for (Calendar a : mItems) { // 添加操作
                 a.setCurrentDay(false);
             }
             int index = mItems.indexOf(mDelegate.getCurrentDay());
@@ -184,7 +163,6 @@ public abstract class BaseMonthView extends BaseView {
         }
         invalidate();
     }
-
 
     /**
      * 获取选中的下标
@@ -212,9 +190,8 @@ public abstract class BaseMonthView extends BaseView {
      * 2、绘制矩形选中效果，也可以在这里计算矩形宽和高
      */
     protected void onPreviewHook() {
-        // TODO: 2017/11/16
-    }
 
+    }
 
     /**
      * 循环绘制开始的回调，不需要可忽略
@@ -224,7 +201,7 @@ public abstract class BaseMonthView extends BaseView {
      * @param y 日历Card y起点坐标
      */
     protected void onLoopStart(int x, int y) {
-        // TODO: 2017/11/16  
+
     }
 
     @Override

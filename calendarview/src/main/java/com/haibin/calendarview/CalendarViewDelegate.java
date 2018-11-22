@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.content.Context;
@@ -28,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Google规范化的属性委托,
+ * Google规范化的属性委托
  * 代码量多，但是不影响阅读性
  */
 final class CalendarViewDelegate {
@@ -47,7 +32,6 @@ final class CalendarViewDelegate {
      * 周起始：周六
      */
     static final int WEEK_START_WITH_SAT = 7;
-
 
     /**
      * 周起始
@@ -73,8 +57,6 @@ final class CalendarViewDelegate {
      */
     private int mMonthViewShowMode;
 
-
-
     /**
      * 默认选择模式
      */
@@ -95,15 +77,14 @@ final class CalendarViewDelegate {
      */
     private int mSelectMode;
 
-
     /**
      * 支持转换的最小农历年份
      */
-    static final int MIN_YEAR = 1900;
+    public static final int MIN_YEAR = 1900;
     /**
      * 支持转换的最大农历年份
      */
-    private static final int MAX_YEAR = 2099;
+    public static final int MAX_YEAR = 2099;
 
     /**
      * 各种字体颜色，看名字知道对应的地方
@@ -176,7 +157,6 @@ final class CalendarViewDelegate {
      * 标记的主题色和选中的主题色
      */
     private int mSchemeThemeColor, mSelectedThemeColor;
-
 
     /**
      * 自定义的日历路径
@@ -336,7 +316,6 @@ final class CalendarViewDelegate {
      */
     Calendar mIndexCalendar;
 
-
     /**
      * 选择范围日历
      */
@@ -372,7 +351,6 @@ final class CalendarViewDelegate {
         mMonthViewScrollable = array.getBoolean(R.styleable.CalendarView_month_view_scrollable, true);
         mWeekViewScrollable = array.getBoolean(R.styleable.CalendarView_week_view_scrollable, true);
         mYearViewScrollable = array.getBoolean(R.styleable.CalendarView_year_view_scrollable, true);
-
 
         mMonthViewShowMode = array.getInt(R.styleable.CalendarView_month_view_show_mode, MODE_ALL_MONTH);
         mWeekStart = array.getInt(R.styleable.CalendarView_week_start_with, WEEK_START_WITH_SUN);
@@ -451,7 +429,6 @@ final class CalendarViewDelegate {
         LunarCalendar.setupLunarCalendar(mCurrentDate);
         setRange(mMinYear, mMinYearMonth, mMaxYear, mMaxYearMonth);
 
-
         try {
             if (!TextUtils.isEmpty(mWeekBarClassPath)) {
                 mWeekBarClass = Class.forName(mWeekBarClassPath);
@@ -484,7 +461,6 @@ final class CalendarViewDelegate {
             e.printStackTrace();
         }
     }
-
 
     private void setRange(int minYear, int minYearMonth,
                           int maxYear, int maxYearMonth) {
@@ -643,7 +619,6 @@ final class CalendarViewDelegate {
     int getMaxYearMonth() {
         return mMaxYearMonth;
     }
-
 
     int getYearViewMonthTextSize() {
         return mYearViewMonthTextSize;
@@ -828,7 +803,6 @@ final class CalendarViewDelegate {
         return mCalendarPadding;
     }
 
-
     void setPreventLongPressedSelected(boolean preventLongPressedSelected) {
         this.preventLongPressedSelected = preventLongPressedSelected;
     }
@@ -951,14 +925,13 @@ final class CalendarViewDelegate {
 
         date.set(mSelectedStartRangeCalendar.getYear(),
                 mSelectedStartRangeCalendar.getMonth() - 1,
-                mSelectedStartRangeCalendar.getDay());//
+                mSelectedStartRangeCalendar.getDay());
 
-        long startTimeMills = date.getTimeInMillis();//获得起始时间戳
-
+        long startTimeMills = date.getTimeInMillis(); // 获得起始时间戳
 
         date.set(mSelectedEndRangeCalendar.getYear(),
                 mSelectedEndRangeCalendar.getMonth() - 1,
-                mSelectedEndRangeCalendar.getDay());//
+                mSelectedEndRangeCalendar.getDay());
         long endTimeMills = date.getTimeInMillis();
         for (long start = startTimeMills; start <= endTimeMills; start += ONE_DAY) {
             date.setTimeInMillis(start);

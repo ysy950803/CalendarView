@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 huanghaibin_dev <huanghaibin_dev@163.com>
- * WebSite https://github.com/MiracleTimes-Dev
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.haibin.calendarview;
 
 import android.text.TextUtils;
@@ -22,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 日历对象、
+ * 日历对象
  */
 @SuppressWarnings("all")
 public final class Calendar implements Serializable {
+
     private static final long serialVersionUID = 141315161718191143L;
 
     /**
@@ -69,12 +55,10 @@ public final class Calendar implements Serializable {
      */
     private String lunar;
 
-
     /**
      * 24节气
      */
     private String solarTerm;
-
 
     /**
      * 公历节日
@@ -98,7 +82,6 @@ public final class Calendar implements Serializable {
      */
     private int schemeColor;
 
-
     /**
      * 多标记
      * multi scheme,using addScheme();
@@ -119,7 +102,6 @@ public final class Calendar implements Serializable {
      * 获取完整的农历日期
      */
     private Calendar lunarCalendar;
-
 
     public int getYear() {
         return year;
@@ -149,7 +131,6 @@ public final class Calendar implements Serializable {
         return isCurrentMonth;
     }
 
-
     public void setCurrentMonth(boolean currentMonth) {
         this.isCurrentMonth = currentMonth;
     }
@@ -162,7 +143,6 @@ public final class Calendar implements Serializable {
         isCurrentDay = currentDay;
     }
 
-
     public String getLunar() {
         return lunar;
     }
@@ -171,16 +151,13 @@ public final class Calendar implements Serializable {
         this.lunar = lunar;
     }
 
-
     public String getScheme() {
         return scheme;
     }
 
-
     public void setScheme(String scheme) {
         this.scheme = scheme;
     }
-
 
     public int getSchemeColor() {
         return schemeColor;
@@ -190,7 +167,6 @@ public final class Calendar implements Serializable {
         this.schemeColor = schemeColor;
     }
 
-
     public List<Scheme> getSchemes() {
         return schemes;
     }
@@ -198,7 +174,6 @@ public final class Calendar implements Serializable {
     public void setSchemes(List<Scheme> schemes) {
         this.schemes = schemes;
     }
-
 
     public void addScheme(Scheme scheme) {
         if (schemes == null) {
@@ -274,7 +249,6 @@ public final class Calendar implements Serializable {
     public void setGregorianFestival(String gregorianFestival) {
         this.gregorianFestival = gregorianFestival;
     }
-
 
     public int getLeapMonth() {
         return leapMonth;
@@ -379,7 +353,6 @@ public final class Calendar implements Serializable {
         return year + "" + (month < 10 ? "0" + month : month) + "" + (day < 10 ? "0" + day : day);
     }
 
-
     final void mergeScheme(Calendar calendar, String defaultScheme) {
         if (calendar == null)
             return;
@@ -405,6 +378,7 @@ public final class Calendar implements Serializable {
         private String other;
 
         public Scheme() {
+
         }
 
         public Scheme(int type, int shcemeColor, String scheme, String other) {
@@ -462,6 +436,5 @@ public final class Calendar implements Serializable {
         public void setType(int type) {
             this.type = type;
         }
-
     }
 }
